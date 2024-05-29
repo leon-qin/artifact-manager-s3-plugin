@@ -159,10 +159,16 @@ public final class JCloudsArtifactManager extends ArtifactManager implements Sta
                 try {
                     String contentType = Files.probeContentType(theFile.toPath());
                     if (contentType == null) {
+                        LOGGER.fine("Files.probeContentType cannot determine content type; falling back to URLConnection.guessContentTypeFromName or Tika");
                         contentType = URLConnection.guessContentTypeFromName(theFile.getName());
                     }
                     if (contentType == null) {
+                        LOGGER.fine("URLConnection.guessContentTypeFromName cannot determine content type; falling back to Tika");
                         contentType = detectByTika(theFile);
+                    }
+                    if (contentType == null) {
+                        LOGGER.fine("Tika cannot determine content type; falling back to application/octet-stream");
+                        contentType = "application/octet-stream";
                     }
                     contentTypes.put(relPath, contentType);
                 } catch (IOException e) {
