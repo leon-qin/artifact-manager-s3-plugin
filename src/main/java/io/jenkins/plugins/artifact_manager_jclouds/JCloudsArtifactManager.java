@@ -157,12 +157,22 @@ public final class JCloudsArtifactManager extends ArtifactManager implements Sta
             for (String relPath : relPaths) {
                 File theFile = new File(f, relPath);
                 try {
+                    LOGGER.log(Level.FINE, "Guessing mimetype of {0}", theFile.getName());
+
                     String contentType = Files.probeContentType(theFile.toPath());
                     if (contentType == null) {
                         contentType = URLConnection.guessContentTypeFromName(theFile.getName());
+                    } else {
+                        LOGGER.log(Level.FINE, "Detected content type {0} for {1} with Files.probeContentType", new Object[] { contentType, theFile.getName() });
                     }
                     if (contentType == null) {
                         contentType = detectByTika(theFile);
+                    } else {
+                        LOGGER.log(Level.FINE, "Detected content type {0} for {1} with Files.probeContentType", new Object[] { contentType, theFile.getName() });
+                    }
+
+                    if (contentType == null) {
+                        LOGGER.log(Level.FINE, "Unable to determine content type for file: {0}", theFile);
                     }
                     contentTypes.put(relPath, contentType);
                 } catch (IOException e) {
