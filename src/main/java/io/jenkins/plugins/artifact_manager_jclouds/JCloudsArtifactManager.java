@@ -157,12 +157,24 @@ public final class JCloudsArtifactManager extends ArtifactManager implements Sta
             for (String relPath : relPaths) {
                 File theFile = new File(f, relPath);
                 try {
+                    // if theFile's extension name is one of .spk, .sdn, .dmg, then set contentType to application/octet-stream
+                    String fileName = theFile.getName();
+                    LOGGER.log(Level.FINE, "Guessing mimetype of the file {0}", fileName);
+
+                    if (fileName.endsWith(".spk") || fileName.endsWith(".sdn") || fileName.endsWith(".dmg")) {
+                        contentTypes.put(relPath, "application/octet-stream");
+                        continue;
+                    }
+                    
                     String contentType = Files.probeContentType(theFile.toPath());
                     if (contentType == null) {
                         contentType = URLConnection.guessContentTypeFromName(theFile.getName());
                     }
                     if (contentType == null) {
                         contentType = detectByTika(theFile);
+                    }
+                    if (contentType == null) {
+                        contentType = "application/octet-stream";
                     }
                     contentTypes.put(relPath, contentType);
                 } catch (IOException e) {
