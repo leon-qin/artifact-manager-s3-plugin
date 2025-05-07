@@ -122,7 +122,7 @@ public final class JCloudsArtifactManager extends ArtifactManager implements Sta
             throws IOException, InterruptedException {
         LOGGER.log(Level.FINE, "Archiving from {0}: {1}", new Object[] { workspace, artifacts });
         Map<String, String> contentTypes = workspace.act(new ContentTypeGuesser(new ArrayList<>(artifacts.values()), listener));
-        LOGGER.fine(() -> "guessing content types: " + contentTypes);
+        LOGGER.fine(() -> "guessing content types: " + String.valueOf(contentTypes));
         Map<String, URL> artifactUrls = new HashMap<>();
         BlobStore blobStore = getContext().getBlobStore();
 
@@ -159,7 +159,6 @@ public final class JCloudsArtifactManager extends ArtifactManager implements Sta
                 try {
                     // if theFile's extension name is one of .spk, .sdn, .dmg, then set contentType to application/octet-stream
                     String fileName = theFile.getName();
-                    LOGGER.log(Level.FINE, "Guessing mimetype of the file {0}", fileName);
 
                     if (fileName.endsWith(".spk") || fileName.endsWith(".sdn") || fileName.endsWith(".dmg")) {
                         contentTypes.put(relPath, "application/octet-stream");
